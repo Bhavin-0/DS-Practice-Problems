@@ -187,6 +187,34 @@ void PlacementSystem::searchRecord(){
     }
 }
 
+void PlacementSystem::sortRecord(){
+    // check if the LL is null or only 1 node 
+    if(head == nullptr || head->next == nullptr){
+        cout<<"\nNot enough records to sort.";
+        return;
+    }
+
+    //use two pointer current/index 
+    PlacementRecord* current = head;
+    PlacementRecord* index = nullptr;
+
+    while(current != nullptr){
+        index = current->next;
+        while(index != nullptr){
+            if(current->prn > index->prn){
+                swap(current->prn,index->prn);
+                swap(current->name,index->name);
+                swap(current->branch,index->branch);
+                swap(current->cgpa,index->cgpa);
+                swap(current->companyName,index->companyName);
+            }
+            index = index->next;
+        }
+        current = current->next;
+    }
+    cout<<"Record sorted Successfully by PRN.";
+}
+
 int main(){
 
     return 0;

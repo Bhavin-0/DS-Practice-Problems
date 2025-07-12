@@ -5,7 +5,7 @@ class PlacementRecord{
     friend class PlacementSystem;
 
     private:
-        int prn;
+        long long prn;
         string name;
         float cgpa;
         string branch;
@@ -18,12 +18,14 @@ class PlacementSystem{
         PlacementRecord* head;
 
     public:
-        PlacementSystem();
+        PlacementSystem(){
+            head = nullptr;
+        }
         void insertRecord();
         void updateRecord();
         void searchRecord();
         void sortRecord();
-        void listRecord();
+        void listRecords();
         void deleteRecord();
         ~PlacementSystem();
 };
@@ -33,28 +35,31 @@ void PlacementSystem::insertRecord(){
 
     cout<<"Enter PRN : ";
     cin>>newRecord->prn;
+    cin.ignore();
 
     cout<<"Enter your Name : ";
-    cin>>newRecord->name;
+    getline(cin, newRecord->name);
 
     cout<<"Enter your CGPA : ";
     cin>>newRecord->cgpa;
+    cin.ignore();
 
     cout<<"Enter branch : ";
-    cin>>newRecord->branch;
+    getline(cin, newRecord->branch);
 
     cout<<"Enter Company Name : ";
-    cin>>newRecord->companyName;
+    getline(cin, newRecord->companyName);
+
+    newRecord->next = nullptr;
 
     if(head == nullptr){
         head = newRecord;
     }else{
         PlacementRecord* temp = head;
-        while(temp != nullptr){
+        while(temp->next != nullptr){
             temp = temp->next;
         }
         temp->next = newRecord;
-
     }
     cout<<"Record Inserted Successfully.";
 }
@@ -63,29 +68,31 @@ void PlacementSystem::updateRecord(){
     if(head == nullptr){
         cout<<"\nNo Records to Update.";
     }
-    int updateId;
+    long long updateId;
     cout<<"Enter the PRN : ";
     cin>>updateId;
+    cin.ignore();
     PlacementRecord* temp = head;
     while(temp != nullptr){
         if(temp->prn == updateId){
-            cout<<"\n========== RECORD FOUND OF "<<temp->prn<<" ==========";
+            cout<<"\n========== RECORD FOUND OF "<<temp->prn<<" =========="<<endl;
             cout << "Current Name: " << temp->name << endl;
             cout << "Current Branch: " << temp->branch << endl;
             cout << "Current Percentage: " << temp->cgpa << endl;
             cout << "Current Company Name: " << temp->companyName << endl;
 
             cout<<"\nEnter New Name : ";
-            cin>>temp->name;
+            getline(cin, temp->name);
 
             cout<<"Enter New Branch : ";
-            cin>>temp->branch;
+            getline(cin, temp->branch);
 
             cout<<"Enter New CGPA : ";
             cin>>temp->cgpa;
+            cin.ignore();
 
             cout<<"Enter New Company Name : ";
-            cin>>temp->companyName;
+            getline(cin, temp->companyName);
 
             cout<<"Record Updated Successfully.";
             return;
@@ -93,16 +100,16 @@ void PlacementSystem::updateRecord(){
         temp = temp->next;
     }
 
-    cout<<"Record with "<<temp->prn<<" not found !!";
+    cout<<"Record with "<<updateId<<" not found !!";
 }
 
-void PlacementSystem::listRecord(){
+void PlacementSystem::listRecords(){
     PlacementRecord* temp = head;
     int count=1;
     cout<<"\n========== LIST OF PLACEMENT RECORDS ==========";
     while (temp != nullptr)
     {
-        cout<<"\n Record # "<<count++;
+        cout<<"\n Record # "<<count++<<endl;
         cout<<"PRN : "<<temp->prn<<endl;
         cout<<"Name : "<<temp->name<<endl;
         cout<<"branch : "<<temp->branch<<endl;
@@ -112,8 +119,6 @@ void PlacementSystem::listRecord(){
 
         temp = temp->next;
     }
-    
-
 }
 
 void PlacementSystem::deleteRecord(){
@@ -122,7 +127,7 @@ void PlacementSystem::deleteRecord(){
         return;
     }
 
-    int deleteId;
+    long long deleteId;
     cout<<"Enter PRN to delete : ";
     cin>>deleteId;
     PlacementRecord* temp = head;
@@ -141,7 +146,7 @@ void PlacementSystem::deleteRecord(){
     }
 
     if(temp == nullptr) {
-        cout << "\nRecord deleted successfully for PRN: " << deleteId;
+        cout << "\nRecord with PRN " << deleteId << " not found!";
         return;
     }
     
@@ -158,7 +163,7 @@ void PlacementSystem::searchRecord(){
     }
 
     bool found = false;
-    int searchId;
+    long long searchId;
     cout<<"\nEnter PRN to search : ";
     cin>>searchId;
 
@@ -166,7 +171,6 @@ void PlacementSystem::searchRecord(){
 
     while(temp != nullptr){
         if(temp->prn == searchId){
-
             found = true;
             cout<<"\n--------- Searched Record --------- ";
             cout<<"PRN : "<<temp->prn<<endl;
@@ -175,7 +179,6 @@ void PlacementSystem::searchRecord(){
             cout<<"CGPA : "<<temp->cgpa<<endl;
             cout<<"Company Name : "<<temp->companyName<<endl;
             cout << "-------------------------------\n";
-
             cout<<"\nRecord Found. ";
             break;
         }
@@ -215,7 +218,66 @@ void PlacementSystem::sortRecord(){
     cout<<"Record sorted Successfully by PRN.";
 }
 
-int main(){
+PlacementSystem::~PlacementSystem(){
+    PlacementRecord* temp = head;
+    while(temp!=nullptr){
+        PlacementRecord* nextNode = temp->next;
+        delete temp;
+        temp = nextNode;
+    }
+}
+
+int main() {
+    PlacementSystem system;
+    int choice;
+
+    do {
+        cout << "\n===== Placement Information System =====";
+        cout << "\n1. Insert Record";
+        cout << "\n2. Update Record";
+        cout << "\n3. Search Record";
+        cout << "\n4. Delete Record";
+        cout << "\n5. Sort Records by PRN";
+        cout << "\n6. List All Records";
+        cout << "\n7. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        //To handle invalid input 
+        if(cin.fail()){
+            cin.clear();
+            cin.ignore(10000,'\n');
+            cout<<"Invalid input Please enter within (1-7) digits!!";
+            continue;
+        }
+
+        switch(choice) {
+            case 1:
+                system.insertRecord();
+                break;
+            case 2:
+                system.updateRecord();
+                break;
+            case 3:
+                system.searchRecord();
+                break;
+            case 4:
+                system.deleteRecord();
+                break;
+            case 5:
+                system.sortRecord();
+                break;
+            case 6:
+                system.listRecords();
+                break;
+            case 7:
+                cout << "\nExiting the program. Goodbye!\n";
+                break;
+            default:
+                cout << "\nInvalid choice. Please try again.";
+        }
+
+    } while (choice != 7);
 
     return 0;
 }
